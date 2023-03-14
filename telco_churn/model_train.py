@@ -7,6 +7,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 import mlflow
 from mlflow.models import infer_signature
+import numpy as np
 
 import databricks
 from databricks.feature_store import FeatureStoreClient, FeatureLookup
@@ -134,6 +135,9 @@ class ModelTrain:
         _logger.info('Load training set from Feature Store, converting to pandas DataFrame')
         training_set_pdf = fs_training_set.load_df().toPandas()
 
+        training_set_pdf.replace([np.inf, -np.inf], np.nan, inplace=True)
+        training_set_pdf.dropna(inplace=True)
+
         X = training_set_pdf.drop(labels_table_cfg.label_col, axis=1)
         y = training_set_pdf[labels_table_cfg.label_col]
 
@@ -228,8 +232,8 @@ class ModelTrain:
             # Log metrics for the test set
             _logger.info('==========Model Evaluation==========')
             _logger.info('Evaluating and logging metrics')
-            test_metrics = mlflow.sklearn.eval_and_log_metrics(model, X_test, y_test, prefix='test_')
-            print(pd.DataFrame(test_metrics, index=[0]))
+            #test_metrics = mlflow.sklearn.eval_and_log_metrics(model, X_test, y_test, prefix='test_')
+            #print(pd.DataFrame(test_metrics, index=[0]))
 
             # Register model to MLflow Model Registry if provided
             if mlflow_tracking_cfg.model_name is not None:

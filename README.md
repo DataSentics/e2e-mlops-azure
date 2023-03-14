@@ -45,6 +45,8 @@ The following outlines the workflow to demo the repo.
         - `DATABRICKS_PROD_TOKEN`
             - [Databricks access token](https://docs.databricks.com/dev-tools/api/latest/authentication.html) for production workspace
 
+1. Create table in metastore from kaggle data here https://www.kaggle.com/datasets/yeanzc/telco-customer-churn-ibm-dataset. Set the table name to conf/feature_table_creator and change label col. Also in .base_data_params.env, change the primery key name.
+
     #### ASIDE: Starting from scratch
     
     The following resources should not be present if starting from scratch: 

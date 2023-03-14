@@ -18,6 +18,7 @@
 
 # DBTITLE 1,Set env
 dbutils.widgets.dropdown('env', 'dev', ['dev', 'staging', 'prod'], 'Environment Name')
+print('test')
 
 # COMMAND ----------
 
