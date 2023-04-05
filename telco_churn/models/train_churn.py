@@ -16,12 +16,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
 
-from dataclasses import dataclass
-from typing import List, Dict, Any
-import pprint
-
-import pandas as pd
-import sklearn
 from sklearn.model_selection import train_test_split
 import mlflow
 from mlflow.models import infer_signature
@@ -114,10 +108,11 @@ pipeline = Pipeline(
 # COMMAND ----------
 
 model_name = "customer_churn_random_forest"
-run_name = f"dev_{model_name}"
 
+mlflow.set_experiment(f"dev_customer_{model_name}_")
 mlflow.sklearn.autolog(log_input_examples=True, silent=True)
-with mlflow.start_run(run_name=run_name) as mlflow_run:
+
+with mlflow.start_run() as mlflow_run:
     model = pipeline.fit(X_train, y_train)
 
     fs.log_model(

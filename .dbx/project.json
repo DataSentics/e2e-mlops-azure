@@ -1,19 +1,15 @@
 {
     "environments": {
         "dev": {
-            "profile": "DEFAULT",
-            "workspace_dir": "/Shared/e2e_mlops_ado/dev/dbx/e2e_mlops_dev",
-            "artifact_location": "dbfs:/Shared/e2e_mlops/dev/dbx/projects/e2e_mlops_ado_dbx_dev"
-        },
-        "staging": {
-            "profile": "DEFAULT",
-            "workspace_dir": "/Shared/e2e_mlops_ado/staging/dbx/e2e_mlops_staging",
-            "artifact_location": "dbfs:/Shared/e2e_mlops/staging/dbx/projects/e2e_mlops_ado_dbx_staging"
-        },
-        "prod": {
-            "profile": "DEFAULT",
-            "workspace_dir": "/Shared/e2e_mlops_ado/prod/dbx/e2e_mlops_prod",
-            "artifact_location": "dbfs:/Shared/e2e_mlops/prod/dbx/projects/e2e_mlops_ado_dbx_prod"
+            "profile": "demo",
+            "storage_type": "mlflow",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/projects/e2e-mlops-azure",
+                "artifact_location": "dbfs:/dbx/e2e-mlops-azure"
+            }
         }
-    }
+    },
+    "inplace_jinja_support": false,
+    "failsafe_cluster_reuse_with_assets": false,
+    "context_based_upload_for_execute": false
 }
