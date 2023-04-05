@@ -10,7 +10,7 @@ from databricks.feature_store import FeatureStoreClient
 # COMMAND ----------
 
 model_name = "customer_churn_random_forest"
-model_uri = f"models:/{model_name}/None"
+model_uri = f"models:/{model_name}/Production"
 ids_table = "e2e_mlops_demo.bronze_customers_churn.churn_inference"
 
 # COMMAND ----------
