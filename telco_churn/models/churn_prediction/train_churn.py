@@ -13,6 +13,7 @@ import numpy as np
 
 import mlflow
 from mlflow.models import infer_signature
+from mlflow.tracking import MlflowClient
 from databricks.feature_store import FeatureStoreClient, FeatureLookup
 
 from sklearn.compose import make_column_selector, ColumnTransformer
@@ -22,7 +23,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
-from lib.mlops import get_experiment_name, move_model_to_staging
+from lib.mlops import get_experiment_name
 
 # COMMAND ----------
 
@@ -43,6 +44,7 @@ print(experiment_name)
 # COMMAND ----------
 
 fs = FeatureStoreClient()
+mlflow_client = MlflowClient()
 
 # COMMAND ----------
 

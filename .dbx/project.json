@@ -4,8 +4,24 @@
             "profile": "demo",
             "storage_type": "mlflow",
             "properties": {
-                "workspace_directory": "/Shared/dbx/projects/e2e-mlops-azure",
-                "artifact_location": "dbfs:/dbx/e2e-mlops-azure"
+                "workspace_directory": "/Shared/dbx/dev/mlops-demo",
+                "artifact_location": "dbfs:/dbx/dev/mlops-demo"
+            }
+        },
+        "staging": {
+            "profile": "test",
+            "storage_type": "mlflow",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/staging/mlops-demo",
+                "artifact_location": "dbfs:/dbx/staging/mlops-demo"
+            }
+        },
+        "prod": {
+            "profile": "fsi",
+            "storage_type": "mlflow",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/staging/mlops-demo",
+                "artifact_location": "dbfs:/dbx/staging/mlops-demo"
             }
         }
     },

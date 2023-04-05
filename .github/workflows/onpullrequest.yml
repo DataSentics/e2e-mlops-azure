@@ -1,0 +1,31 @@
+name: Integration tests pipeline
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  pipeline:
+
+    runs-on: ubuntu-latest
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_TEST_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TEST_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+      - name: Run integration tests
+        run: |
+          dbx deploy inference_pipeline --deployment-file deployment.yml --environment=staging
+          dbx launch inference_pipeline --environment=staging --trace --existing-runs wait

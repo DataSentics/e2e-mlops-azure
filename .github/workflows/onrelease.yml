@@ -27,11 +27,11 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Train model in production
         run: |
-          dbx deploy train_churn_model --deployment-file deployment.yml --environment=dev
+          dbx deploy train_churn_model --deployment-file deployment.yml --environment=prod
           dbx launch train_churn_model --environment=dev --trace --existing-runs wait
       - name: Train model in production
         run: |
-          dbx deploy inference_pipeline --deployment-file deployment.yml --environment=dev
+          dbx deploy inference_pipeline --deployment-file deployment.yml --environment=prod
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

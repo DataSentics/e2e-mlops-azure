@@ -2,14 +2,23 @@ build:
   no_build: true
 
 clusters:
-  basic-cluster-props: &basic-cluster-props
+  basic-cluster-props: &default-cluster-spec
     spark_version: "12.2.x-cpu-ml-scala2.12"
+    node_type_id: 'Standard_D4a_v4'
+    driver_node_type_id: 'Standard_D4a_v4'
+    num_workers: 1
 
-  basic-static-cluster: &basic-static-cluster
+  staging-cluster-config: &staging-cluster-config
     new_cluster:
-      <<: *basic-cluster-props
-      num_workers: 1
-      instance_pool_id: "0405-095028-super222-pool-6j0p3smq"
+      <<: *default-cluster-spec
+      spark_env_vars:
+        ENV: "test"
+
+  prod-cluster-config: &prod-cluster-config
+    new_cluster:
+      <<: *default-cluster-spec
+      spark_env_vars:
+        ENV: "test"
 
 git:
   odap-git-source: &odap-git-source
@@ -18,26 +27,28 @@ git:
     git_branch: "ll-simplify"
 
 environments:
-  dev:
+  prod:
     workflows:
       - name: "inference_pipeline"
         git_source: *odap-git-source
         job_clusters:
           - job_cluster_key: "default"
-            <<: *basic-static-cluster
+            <<: *prod-cluster-config
         tasks:
-          - task_key: "feature_table_update"
+          - &feature_table_update
+            task_key: "feature_table_update"
             deployment_config:
               no_package: true
             job_cluster_key: "default"
             notebook_task:
               notebook_path: "telco_churn/features/customer_features"
-          - task_key: "run_inference"
+          - &run_inference
+            task_key: "run_inference"
             deployment_config:
               no_package: true
             job_cluster_key: "default"
             notebook_task:
-              notebook_path: "telco_churn/models/churn_inference"
+              notebook_path: "telco_churn/models/churn_prediction/inference"
             depends_on:
               - task_key: "feature_table_update"
 
@@ -45,19 +56,29 @@ environments:
         git_source: *odap-git-source
         job_clusters:
           - job_cluster_key: "default"
-            <<: *basic-static-cluster
+            <<: *prod-cluster-config
         tasks:
           - task_key: "train_model"
             deployment_config:
               no_package: true
             job_cluster_key: "default"
             notebook_task:
-              notebook_path: "telco_churn/models/train_churn"
+              notebook_path: "telco_churn/models/churn_prediction/train"
           - task_key: "replace_production_model"
             deployment_config:
               no_package: true
             job_cluster_key: "default"
             notebook_task:
-              notebook_path: "deploy/replace_model"
+              notebook_path: "telco_churn/deploy/replace_model"
             depends_on:
               - task_key: "train_model"
+  staging:
+    workflows:
+      - name: "test_inference_pipeline"
+        git_source: *odap-git-source
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *staging-cluster-config
+        tasks:
+          - <<: *feature_table_update
+          - <<: *run_inference

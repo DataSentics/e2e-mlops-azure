@@ -23,7 +23,7 @@ df = (
         spark.read.format("csv")
         .option("header", True)
         .option("inferSchema", True)
-        .load(f"file:{cwd}/data/churn.csv")
+        .load(f"file:{cwd}/demo/data/churn.csv")
     )
     .withColumn("ZipCode", F.col("ZipCode").cast("string").alias("ZipCode"))
     .withColumn("Count", F.col("Count").cast("double").alias("Count"))

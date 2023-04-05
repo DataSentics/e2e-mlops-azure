@@ -1,5 +1,5 @@
 from setuptools import find_packages, setup
-# from e2e_mlops_ado import __version__
+
 
 setup(
     name="e2e_mlops_ado",
