@@ -8,29 +8,41 @@
 
 # COMMAND ----------
 
+import os
+import numpy as np
+
+import mlflow
+from mlflow.models import infer_signature
 from databricks.feature_store import FeatureStoreClient, FeatureLookup
-from mlflow.tracking import MlflowClient
+
 from sklearn.compose import make_column_selector, ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
-
 from sklearn.model_selection import train_test_split
-import mlflow
-from mlflow.models import infer_signature
-import numpy as np
+
+from lib.mlops import get_experiment_name, move_model_to_staging
 
 # COMMAND ----------
 
-feature_table_name = "e2e_mlops_demo.customer_features"
+env = os.environ["ENV"]
+feature_table_name = f"{env}.mlops_demo.customer_features"
+
 primary_key = "CustomerID"
 label = "ChurnLabel"
+entity_name = "customer"
+model_name = "churn"
+model_type = "random_forest"
+
+full_model_name = f"{entity_name}_{model_name}_{model_type}"
+experiment_name = get_experiment_name(entity_name, model_name, model_type)
+
+print(experiment_name)
 
 # COMMAND ----------
 
 fs = FeatureStoreClient()
-mlflow_client = MlflowClient()
 
 # COMMAND ----------
 
@@ -107,9 +119,7 @@ pipeline = Pipeline(
 
 # COMMAND ----------
 
-model_name = "customer_churn_random_forest"
-
-mlflow.set_experiment(f"dev_customer_{model_name}_")
+mlflow.set_experiment("/Shared/e2e_mlops_ado/" + experiment_name)
 mlflow.sklearn.autolog(log_input_examples=True, silent=True)
 
 with mlflow.start_run() as mlflow_run:
@@ -117,22 +127,17 @@ with mlflow.start_run() as mlflow_run:
 
     fs.log_model(
         model,
-        model_name,
+        full_model_name,
         flavor=mlflow.sklearn,
         training_set=training_set,
         input_example=X_train[:100],
-        signature=infer_signature(X_train, y_train),
+        signature=infer_signature(X_train, X_test),
     )
 
-    mlflow.register_model(f"runs:/{mlflow_run.info.run_id}/{model_name}", name=model_name)
+    model_version = mlflow.register_model(f"runs:/{mlflow_run.info.run_id}/{full_model_name}", name=full_model_name)
 
 # COMMAND ----------
 
-registered_model = mlflow_client.get_registered_model(name=model_name)
-latest_versions_list = registered_model.latest_versions
-
-for model_version in latest_versions_list:
-    if model_version.current_stage != "Archived":
-        mlflow_client.transition_model_version_stage(
-            name=model_name, version=model_version.version, stage="Staging"
-        )
+mlflow_client.transition_model_version_stage(
+    name=full_model_name, version=model_version.version, stage="Staging"
+)

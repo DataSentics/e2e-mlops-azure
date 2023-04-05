@@ -5,24 +5,20 @@
 
 # COMMAND ----------
 
+import os
+
 from databricks.feature_store import FeatureStoreClient
-
-# COMMAND ----------
-
-feature_table_name = "e2e_mlops_demo.customer_features"
 
 # COMMAND ----------
 
 fs = FeatureStoreClient()
 
+env = os.environ["ENV"]
+feature_table_name = f"{env}.mlops_demo.customer_features"
+
 # COMMAND ----------
 
-df = spark.table("e2e_mlops_demo.bronze_customers_churn.bronze_customers_churn").drop("ChurnLabel")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC create database IF NOT EXISTS e2e_mlops_demo
+df = spark.table(f"{env}.mlops_demo.silver_customer").drop("ChurnLabel")
 
 # COMMAND ----------
 
