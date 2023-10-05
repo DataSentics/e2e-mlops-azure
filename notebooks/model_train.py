@@ -1,8 +1,8 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC 
+# MAGIC
 # MAGIC # `model_train`
-# MAGIC 
+# MAGIC
 # MAGIC Pipeline to execute model training. Params, metrics and model artifacts will be tracking to MLflow Tracking.
 # MAGIC Optionally, the resulting model will be registered to MLflow Model Registry if provided.
 
@@ -10,6 +10,10 @@
 
 # DBTITLE 1,pip install requirements.txt
 # MAGIC %pip install -r ../requirements.txt
+
+# COMMAND ----------
+
+print('Some new cool algorihtm for model trainig.')
 
 # COMMAND ----------
 
