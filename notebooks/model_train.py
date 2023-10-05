@@ -15,6 +15,7 @@
 
 print('Some new cool algorihtm for model trainig.')
 print('New cool algorihtm for model trainig.')
+print('New cool algorihtm for model trainig.')
 
 # COMMAND ----------
 
